@@ -66,4 +66,4 @@ Recomendamos seguir los directorios en orden numérico para una progresión lóg
 ## Recursos Adicionales
 
 - [Documentación oficial de Kubernetes](https://kubernetes.io/docs/home/)
-- [Kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) 
+- [Kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
