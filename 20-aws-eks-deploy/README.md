@@ -7,7 +7,7 @@
 - eksctl
 - RDS Mysql
 
-## En esta clase:
+## En esta clase
 
 - Crear un cluster en EKS
 - Tener un RDS Mysql
@@ -24,13 +24,16 @@
 ### Crear un cluster en EKS
 
 La creacion del cluster puede tardar unos minutos.
-```
+
+```shell
 eksctl create cluster -f ekscluster.yaml
 ```
 
 ### Crear un RDS Subnet Group en la VPC del cluster
+
 Ubicar el RDS en las subnets privadas del cluster.
-```
+
+```shell
 aws rds create-db-subnet-group \
     --db-subnet-group-name k8s-subnet-group \
     --db-subnet-group-description "Subnet group for k8s RDS" \
@@ -39,7 +42,7 @@ aws rds create-db-subnet-group \
 
 ## Crear un rds en aws usando la CLI de AWS
 
-```
+```shell
 aws rds create-db-cluster \
     --db-cluster-identifier k8s-aurora-cluster \
     --engine aurora-mysql \
@@ -55,7 +58,7 @@ aws rds create-db-cluster \
 
 ## Crear un Parameter Group para el cluster
 
-```
+```shell
 aws rds create-db-parameter-group \
     --db-parameter-group-name aurorapg \
     --db-parameter-group-family aurora-mysql8.0 \
@@ -64,7 +67,7 @@ aws rds create-db-parameter-group \
 
 ## Crear una instancia de RDS en el cluster
 
-```
+```shell
 aws rds create-db-instance \
       --db-instance-identifier eks-instance \
       --db-cluster-identifier k8s-aurora-cluster \
@@ -85,35 +88,35 @@ kubectl create namespace storage
 
 ### Create an Service Type ExternalName for RDS
 
-```
+```shell
 kubectl -n storage create service externalname mysql --external-name k8s-test-course.cluster-criggmwnb5gy.us-east-1.rds.amazonaws.com
 ```
 
 ### Create a Secret Object for the RDS
 
 Con url directa del HOST
-```
+
+```shell
 kubectl -n backend create secret generic mysql --from-literal=DB_PASSWORD=admink8s --from-literal=DB_USER=admink8s --from-literal=DB_HOST=k8s-test-course.cluster-criggmwnb5gy.us-east-1.rds.amazonaws.com --from-literal=DB_NAME=userdb
 ```
 
 
 ## Crear un job para inicializar la base de datos
 
-```
+```shell
 kubectl -n backend apply -f app/k8s/db-job-init/config.yaml
 kubectl -n backend apply -f app/k8s/db-job-init/init-job.yaml
 ```
 
 ## Crear un secret para el job
 
-```
+```shell
 kubectl -n backend create secret generic mysql --from-literal=DB_PASSWORD=admink8s --from-literal=DB_USER=admink8s --from-literal=DB_HOST=mysql.storage.svc.cluster.local --from-literal=DB_NAME=userdb
 ```
 
-
 ## Configurar ECR
 
-```
+```shell
 aws ecr create-repository --repository-name k8s-backend --region us-east-1
 aws ecr create-repository --repository-name k8s-frontend --region us-east-1
 ```
@@ -121,7 +124,8 @@ aws ecr create-repository --repository-name k8s-frontend --region us-east-1
 El resultado de la creación de los repositorios será algo como:
 
 Backend:
-```
+
+```shell
 {
     "repository": {
         "repositoryArn": "arn:aws:ecr:us-east-1:<your-account-id>:repository/k8s-backend",
@@ -133,6 +137,7 @@ Backend:
 }
 ```
 
+```Shell
 Frontend:
 {
     "repository": {
@@ -147,13 +152,13 @@ Frontend:
 
 ### Login en ECR
 
-```
+```shell
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <your-account-id>.dkr.ecr.us-east-1.amazonaws.com
 ```
 
 ### Build para Arch x86_64 y Taggear la imagen del backend
 
-```
+```shell
 docker buildx build --platform linux/amd64 -t backend:v1 .
 docker tag backend:v1 <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/k8s-backend:v1
 docker push <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/k8s-backend:v1
@@ -161,19 +166,19 @@ docker push <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/k8s-backend:v1
 
 ### Backend
 
-```
+```shell
 kubectl -n backend apply -f ./app/k8s/backend/
 ```
 
 ### Revisar el load balancer del servicio backend
 
-```
+```shell
 kubectl get svc -n backend
 ```
 
 ### Build para Arch x86_64 y Taggear la imagen del frontend
 
-```
+```shell
 docker buildx build --platform linux/amd64 -t frontend:v1 .
 docker tag frontend:v1 <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/k8s-frontend:v1
 docker push <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/k8s-frontend:v1
@@ -181,7 +186,6 @@ docker push <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/k8s-frontend:v1
 
 ### Frontend
 
-```
+```shell
 kubectl -n frontend apply -f ./app/k8s/frontend/
 ```
-

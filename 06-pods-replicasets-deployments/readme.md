@@ -10,135 +10,142 @@ Un Pod es la unidad más pequeña y básica de Kubernetes. Representa una instan
 
 ### Forma imperativa (CLI)
 
-**Crear un pod de nginx**
+#### Crear un pod de nginx
 
 ```shell
 kubectl run nginx-nodeport --image=nginx --restart=Never --port=80
 ```
 
-**Ver pods existentes**
+#### Listar pods
 
 ```shell
 kubectl get pods
 ```
 
-**Exponer un servicio con port-forward**
+#### Exponer un servicio con port-forward
 
 ```shell
 kubectl port-forward pod/nginx-nodeport 8080:80
 ```
 
-## Que significa Stateless vs statefull: tener o no tener estado, ahí está el dilema.
+## Que significa Stateless vs statefull: tener o no tener estado, ahí está el dilema
 
 En Kubernetes, las aplicaciones pueden ser stateless (sin estado) o stateful (con estado). Esto afecta cómo se diseñan y gestionan los Pods.
 
-### Stateless (sin estado):
+### Stateless (sin estado)
+
 - No guardan datos persistentes entre reinicios.
 - Ejemplo: Servidores web como Nginx o aplicaciones que procesan solicitudes HTTP.
 - Escalabilidad sencilla: Puedes agregar o eliminar réplicas sin preocuparte por la consistencia de datos.
 
-### Stateful (con estado):
+### Stateful (con estado)
+
 - Guardan datos persistentes y necesitan mantener el estado entre reinicios.
 - Ejemplo: Bases de datos como MySQL o Redis.
 - Requieren volúmenes persistentes (Persistent Volumes) para almacenar datos.
 
-## ReplicaSets: Garantizar la disponibilidad de Pods.
+## ReplicaSets: Garantizar la disponibilidad de Pods
 
 ### Forma declarativa
 
-**Crear un ReplicaSet**
+#### Crear un ReplicaSet
 
 ```shell
 kubectl apply -f replicaset.yaml
 ```
 
-**Ver pods existentes**
+#### Listar pods gestionados por ReplicaSet
 
 ```shell
 kubectl get pods
 ```
 
-**Ver ReplicaSet existentes**
+#### Ver ReplicaSet existentes
 
 ```shell
 kubectl get replicaset
 ```
 
-**Eliminar un Pod**
+#### Eliminar un Pod
 
 ```shell
 kubectl delete pod nginx-replicaset-<pod-id>
 ```
 
-## Deployments: Gestión declarativa de aplicaciones.
+## Deployments: Gestión declarativa de aplicaciones
 
 Un Deployment es una capa superior que gestiona ReplicaSets y proporciona una forma declarativa de implementar aplicaciones. Es la forma más común de gestionar aplicaciones en Kubernetes.
 
-### Forma declarativa
+### Forma declarativa detalle
 
-**Crear un Deployment**
+#### Crear un Deployment
 
 ```shell
 kubectl apply -f deployment.yaml
 ```
 
-**Ver pods existentes**
+#### Listar pods gestionados por Deployment
 
 ```shell
 kubectl get pods
 ```
 
-**Ver Deployment existentes**
+#### Ver Deployments existentes
 
 ```shell
 kubectl get deployment
 ```
 
-**Eliminar un Pod**
+#### Eliminar un Pod de Deployment
 
 ```shell
 kubectl delete pod hello-deployment-<pod-id>
 ```
 
-**Actualizar la imagen del Deployment**
+#### Actualizar la imagen del Deployment
 
 ```shell
 kubectl set image deployment/hello-deployment hello-app=gcr.io/google-samples/hello-app:2.0
 ```
 
-**Verificar el progreso de la actualización**
+#### Verificar el progreso de la actualización
 
 ```shell
 kubectl rollout status deployment/hello-deployment
 ```
 
-**Verificar los Pods actualizados**
+#### Verificar los Pods después de la actualización
 
 ```shell
 kubectl get pods
 ```
 
-**Revertir la última actualización**
+#### Revertir la última actualización
 
 ```shell
 kubectl rollout undo deployment/hello-deployment
 ```
 
-**Verificar los Pods actualizados**
+#### Verificar los Pods después de revertir
 
 ```shell
 kubectl get pods
 ```
 
-**Exponer un Deployment**
+#### Exponer un Deployment
 
 ```shell
 kubectl port-forward deploy/hello-deployment 8080:8080
 ```
 
+#### Ver pods con ReplicaSet
 
+```shell
+kubectl get pods
+```
 
+#### Ver pods con Deployment
 
-
-
-
+```shell
+kubectl get pods
+```
